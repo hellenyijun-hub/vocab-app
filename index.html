@@ -22,6 +22,8 @@ button{font:inherit;color:inherit;cursor:pointer;border:0}
 input{font:inherit}
 
 .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:8px}
+/* 老内核无 gap 时用margin 兜底 */
+.top>*{margin:0 4px}
 .pill{background:var(--card);border-radius:99px;padding:6px 14px;box-shadow:var(--shadow);font-weight:700;font-size:15px;white-space:nowrap}
 .back{background:var(--card);border-radius:99px;padding:8px 16px;box-shadow:var(--shadow);font-weight:700;white-space:nowrap}
 .back:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(120,80,40,.10)}
@@ -67,10 +69,11 @@ mark{background:linear-gradient(transparent 55%,#ffd36b 55%);color:inherit;font-
 .flip{perspective:900px;cursor:pointer}
 .flip .in{position:relative;transition:transform .5s;transform-style:preserve-3d;min-height:290px}
 .flip.f .in{transform:rotateY(180deg)}
-.face{position:absolute;inset:0;backface-visibility:hidden;background:var(--card);border-radius:24px;padding:22px 16px;box-shadow:var(--shadow);display:flex;flex-direction:column;justify-content:center;overflow:auto}
+/* inset 是较新的简写，同时给出 top/right/bottom/left 兜底老内核 */
+.face{position:absolute;top:0;right:0;bottom:0;left:0;inset:0;backface-visibility:hidden;background:var(--card);border-radius:24px;padding:22px 16px;box-shadow:var(--shadow);display:flex;flex-direction:column;justify-content:center;overflow:auto}
 .face.b{transform:rotateY(180deg)}
 .nav{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:16px}
-.nav .btn{margin:0;padding:11px 20px}
+.nav .btn{margin:0 5px;padding:11px 20px}
 
 .mt{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .tile{background:var(--card);border-radius:16px;padding:14px 8px;min-height:62px;font-size:17px;font-weight:700;box-shadow:var(--shadow);border:3px solid transparent;transition:.2s}
@@ -89,8 +92,9 @@ mark{background:linear-gradient(transparent 55%,#ffd36b 55%);color:inherit;font-
 .blank{display:inline-block;min-width:90px;border-bottom:3px solid var(--pri);color:var(--pri);font-weight:800;letter-spacing:2px}
 .inp{width:100%;font:inherit;font-size:24px;font-weight:700;text-align:center;padding:12px;border-radius:18px;border:3px solid var(--line);background:var(--card);color:var(--ink);outline:0;letter-spacing:2px}
 .inp:focus{border-color:var(--pri2)}.inp.ok{border-color:var(--ok);color:var(--ok)}.inp.no{border-color:var(--bad);color:var(--bad);animation:shake .35s}
-.row{display:flex;gap:10px;justify-content:center;margin-top:12px}.row .btn{margin:0;padding:11px 22px}
-
+/* 用 margin 代替 flex gap：微信 X5 内核对 flex+gap 支持不完整，会导致按钮挤成一团 */
+.row{display:flex;justify-content:center;margin-top:12px}
+.row .btn{margin:0 5px;padding:11px 22px}
 /* 词表页 */
 .search{width:100%;font:inherit;font-size:16px;padding:12px 16px;border-radius:18px;border:2px solid var(--line);background:var(--card);color:var(--ink);outline:0}
 .search:focus{border-color:var(--pri2)}
