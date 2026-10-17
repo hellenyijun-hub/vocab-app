@@ -1,29 +1,25 @@
+// ============================================================
+// 语音朗读 Hook —— 基于浏览器 SpeechSynthesis
+// ============================================================
 import { useCallback } from 'react';
 
-/**
- * Hook wrapping the browser Web Speech API for TTS.
- * Returns a `speak` function that reads English text aloud.
- */
 export function useTTS() {
-  const speak = useCallback((text, rate = 0.85) => {
-    if (!('speechSynthesis' in window)) return;
-    // Cancel any ongoing speech
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'en-US';
-    utterance.rate = rate;
-    utterance.pitch = 1.1;
-    // Try to use a good English voice
-    const voices = window.speechSynthesis.getVoices();
-    const enVoice = voices.find(v => v.lang.startsWith('en') && v.name.includes('Google'))
-      || voices.find(v => v.lang.startsWith('en-US'))
-      || voices.find(v => v.lang.startsWith('en'));
-    if (enVoice) utterance.voice = enVoice;
-    window.speechSynthesis.speak(utterance);
+  const speak = useCallback((text) => {
+    if (typeof window === 'undefined' || !window.speechSynthesis) return false;
+    try {
+      window.speechSynthesis.cancel();
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = 'en-US';
+      utter.rate = 0.9;
+      window.speechSynthesis.speak(utter);
+      return true;
+    } catch {
+      return false;
+    }
   }, []);
 
   const stop = useCallback(() => {
-    if ('speechSynthesis' in window) {
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
       window.speechSynthesis.cancel();
     }
   }, []);

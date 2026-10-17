@@ -1,63 +1,70 @@
-import { useState, useEffect } from 'react';
-import { HashRouter, Routes, Route } from 'react-router-dom';
-import { seedDatabase } from './db/seed';
+import { useState, useCallback } from 'react';
+import { useProgress } from './hooks/useProgress';
 import Home from './pages/Home';
-import Units from './pages/Units';
 import Flashcards from './pages/Flashcards';
-import MatchGame from './pages/MatchGame';
-import SentenceBuilder from './pages/SentenceBuilder';
-import Review from './pages/Review';
+import Quiz from './pages/Quiz';
+import WordList from './pages/WordList';
 
-function LoadingScreen({ message }) {
-  return (
-    <div className="flex flex-col items-center justify-center h-full gap-4 px-8">
-      <span className="text-6xl animate-bounce">🐣</span>
-      <h2 className="text-lg font-bold text-gray-700 text-center">外校单词小达人</h2>
-      <p className="text-sm text-gray-400 text-center">{message}</p>
-      <div className="w-40 h-2 bg-gray-100 rounded-full overflow-hidden mt-2">
-        <div className="h-full bg-amber-400 rounded-full animate-pulse" style={{ width: '60%' }} />
-      </div>
-    </div>
-  );
-}
+const TABS = [
+  { id: 'home', label: '首页', icon: '🏠' },
+  { id: 'cards', label: '背词', icon: '🃏' },
+  { id: 'quiz', label: '测验', icon: '✏️' },
+  { id: 'list', label: '词表', icon: '📋' },
+];
 
 export default function App() {
-  const [dbReady, setDbReady] = useState(false);
-  const [dbMessage, setDbMessage] = useState('正在初始化数据库...');
+  const [tab, setTab] = useState('home');
+  const { progress, markMastered, markWrong, recordQuiz, clearWrong } =
+    useProgress();
 
-  useEffect(() => {
-    seedDatabase()
-      .then((seeded) => {
-        setDbMessage(seeded ? '正在导入词汇数据...' : '正在加载数据库...');
-        // Small delay for smooth UX
-        setTimeout(() => setDbReady(true), 600);
-      })
-      .catch((err) => {
-        console.error('DB seed error:', err);
-        setDbReady(true); // Proceed anyway, will fall back to memory
-      });
-  }, []);
+  // 判断某词是否在错词本
+  const isWrong = useCallback((id) => !!progress.wrong[id], [progress.wrong]);
 
-  if (!dbReady) {
-    return (
-      <div className="app-container">
-        <LoadingScreen message={dbMessage} />
-      </div>
-    );
-  }
+  // 测验结果回调
+  const handleQuizResult = useCallback(
+    (wordId, correct) => {
+      recordQuiz(correct);
+      if (correct) {
+        markMastered(wordId);
+        clearWrong(wordId);
+      } else {
+        markWrong(wordId);
+      }
+    },
+    [recordQuiz, markMastered, markWrong, clearWrong]
+  );
 
   return (
-    <HashRouter>
-      <div className="app-container">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/book/:bookId" element={<Units />} />
-          <Route path="/flashcards/:bookId/:unitId" element={<Flashcards />} />
-          <Route path="/match/:bookId/:unitId" element={<MatchGame />} />
-          <Route path="/sentence/:bookId/:unitId" element={<SentenceBuilder />} />
-          <Route path="/review" element={<Review />} />
-        </Routes>
-      </div>
-    </HashRouter>
+    <div className="app-container">
+      {tab === 'home' && (
+        <Home progress={progress} onNavigate={setTab} />
+      )}
+
+      {tab === 'cards' && (
+        <Flashcards mode="all" onProgress={isWrong} />
+      )}
+
+      {tab === 'quiz' && (
+        <Quiz onResult={handleQuizResult} />
+      )}
+
+      {tab === 'list' && (
+        <WordList progress={progress} onMarkMastered={markMastered} />
+      )}
+
+      {/* 底部导航 */}
+      <nav className="tabbar">
+        {TABS.map((t) => (
+          <button
+            key={t.id}
+            onClick={() => setTab(t.id)}
+            className={tab === t.id ? 'active' : ''}
+          >
+            <span className="text-lg leading-none">{t.icon}</span>
+            <span>{t.label}</span>
+          </button>
+        ))}
+      </nav>
+    </div>
   );
 }

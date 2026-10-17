@@ -1,6 +1,7 @@
-/**
- * Fisher-Yates shuffle — returns a new shuffled array.
- */
+// ============================================================
+// 数组洗牌（Fisher-Yates）与随机抽样
+// ============================================================
+
 export function shuffle(arr) {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
@@ -10,9 +11,6 @@ export function shuffle(arr) {
   return a;
 }
 
-/**
- * Pick n random items from an array.
- */
 export function pickRandom(arr, n) {
   return shuffle(arr).slice(0, n);
 }

@@ -1,0 +1,133 @@
+@import "tailwindcss";
+
+@theme {
+  --color-grade3: #F59E0B;
+  --color-grade3-light: #FEF3C7;
+  --color-grade3-dark: #D97706;
+  --color-grade4: #3B82F6;
+  --color-grade4-light: #DBEAFE;
+  --color-grade4-dark: #1D4ED8;
+  --color-grade5: #10B981;
+  --color-grade5-light: #D1FAE5;
+  --color-grade5-dark: #047857;
+  --color-grade6: #7C3AED;
+  --color-grade6-light: #EDE9FE;
+  --color-grade6-dark: #5B21B6;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background: #FFFBF0;
+  overflow: hidden;
+}
+
+/* 9:16 mobile container */
+.app-container {
+  width: 100%;
+  max-width: 430px;
+  margin: 0 auto;
+  height: 100vh;
+  height: 100dvh;
+  aspect-ratio: 9 / 16;
+  max-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, #FFFBF0 0%, #FFF7E0 100%);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 60px rgba(0,0,0,0.08);
+}
+
+@media (min-width: 431px) {
+  .app-container {
+    border-radius: 20px;
+    margin-top: max(0px, calc((100dvh - min(100dvh, 764px)) / 2));
+  }
+}
+
+/* Scrollable content */
+.scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: env(safe-area-inset-bottom, 16px);
+}
+
+.scroll-area::-webkit-scrollbar {
+  width: 0;
+}
+
+/* Tap feedback */
+.tap-card {
+  transition: all 0.15s ease;
+}
+.tap-card:active {
+  transform: scale(0.97);
+}
+
+/* Progress bar animation */
+.progress-fill {
+  transition: width 0.4s ease;
+}
+
+/* Correct/Wrong animations */
+@keyframes correctPulse {
+  0%, 100% { background-color: #D1FAE5; }
+  50% { background-color: #A7F3D0; }
+}
+@keyframes wrongPulse {
+  0%, 100% { background-color: #FEE2E2; }
+  50% { background-color: #FECACA; }
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+@keyframes popIn {
+  0% { transform: scale(0.8); opacity: 0; }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes floatUp {
+  0% { transform: translateY(10px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+@keyframes bounceEmoji {
+  0%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-15px); }
+  60% { transform: translateY(-5px); }
+}
+
+.answer-correct {
+  animation: correctPulse 0.5s ease 2;
+  border-color: #10B981 !important;
+  background: #D1FAE5 !important;
+}
+.answer-wrong {
+  animation: wrongPulse 0.5s ease 2;
+  border-color: #EF4444 !important;
+  background: #FEE2E2 !important;
+}
+.animate-shake {
+  animation: shake 0.4s ease;
+}
+.animate-pop-in {
+  animation: popIn 0.3s ease forwards;
+}
+.animate-float-up {
+  animation: floatUp 0.4s ease forwards;
+}
+
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 16px);
+}
